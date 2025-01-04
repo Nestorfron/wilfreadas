@@ -22,12 +22,18 @@ function App() {
   };
 
   const handleValidate = () => {
-    if (ValidateCI(ci).valida) {
+    if (ValidateCI(ci).valida === true) {
       setMensaje(ValidateCI(ci).valida);
       setError("");
     } else {
-      setError(ValidateCI(ci));
-      setMensaje("");
+      if (ValidateCI(ci).mensaje) {
+        setError(ValidateCI(ci).mensaje);
+        setMensaje("");
+
+      } else {
+        setError(ValidateCI(ci));
+        setMensaje("");
+      }
     }
   };
 
