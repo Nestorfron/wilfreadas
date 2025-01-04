@@ -6,9 +6,9 @@ export default function calcularDigitoVerificador(cuerpo) {
      * @throws {Error} - Si el cuerpo no tiene exactamente 7 dígitos.
      */
     if (cuerpo.length !== 7 || isNaN(cuerpo)) {
-        const mensajeError = `Error: El cuerpo "${cuerpo}" no es válido. Debe tener exactamente 7 dígitos.`;
+        const mensajeError = `Error: El número de cédula "${cuerpo}" no es válido. Debe tener exactamente 7 dígitos.`;
         console.error(mensajeError);
-        return { error: true, mensaje: mensajeError };
+        return  mensajeError ;
     }
 
     const pesos = [2, 9, 8, 7, 6, 3, 4];

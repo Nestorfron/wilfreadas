@@ -9,8 +9,8 @@ export default function validarCedulaUruguaya(cedula) {
 
     // Verificar longitud
     if (cedula.length !== 8 || isNaN(cedula)) {
-        console.log(`Cédula inválida: "${cedula}" no tiene el formato correcto.`);
-        return false;
+        const error = `Cédula inválida: "${cedula}" no tiene el formato correcto.`;
+        return error;
     }
 
     // Separar el dígito verificador
