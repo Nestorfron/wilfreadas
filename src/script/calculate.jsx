@@ -8,7 +8,7 @@ export default function calcularDigitoVerificador(cuerpo) {
     if (cuerpo.length !== 7 || isNaN(cuerpo)) {
         const mensajeError = `Error: El número de cédula "${cuerpo}" no es válido. Debe tener exactamente 7 dígitos.`;
         console.error(mensajeError);
-        return  mensajeError ;
+        return mensajeError;
     }
 
     const pesos = [2, 9, 8, 7, 6, 3, 4];
@@ -17,7 +17,7 @@ export default function calcularDigitoVerificador(cuerpo) {
         .reduce((acc, num, i) => acc + parseInt(num, 10) * pesos[i], 0);
 
     const resto = suma % 10;
-    const digitoVerificador = resto === 0 ? 0 : 10 - resto;
+    const digitoVerificador = resto === 0 ? 0 : 10 - resto; // Si el resto es 0, el digito verificador es 0
 
     const mensaje = `Cuerpo: ${cuerpo}\n` +
         `Suma ponderada: ${suma}\n` +
@@ -26,4 +26,3 @@ export default function calcularDigitoVerificador(cuerpo) {
 
     return { error: false, digitoVerificador, mensaje };
 }
-

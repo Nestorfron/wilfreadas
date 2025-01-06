@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useTheme } from "next-themes";
 import ValidateCI from "./script/validate.jsx";
 import CalculateCI from "./script/calculate.jsx";
@@ -7,11 +7,12 @@ import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 import { Button, Card, Link, Input } from "@nextui-org/react";
 
 function App() {
-  const [ci, setci] = useState("");
-  const [mensaje, setMensaje] = useState("");
-  const [error, setError] = useState("");
-  const [errorCalc, setErrorCalc] = useState("");
-  const [digitoVerificador, setDigitoVerificador] = useState("");
+  const [ci, setCi] = useState(""); // Para almacenar la cédula completa
+  const [digitos, setDigitos] = useState(""); // Para almacenar los 7 dígitos
+  const [mensaje, setMensaje] = useState(""); // Mensaje de validación de cédula
+  const [error, setError] = useState(""); // Error de validación de cédula
+  const [errorCalc, setErrorCalc] = useState(""); // Error de cálculo
+  const [digitoVerificador, setDigitoVerificador] = useState(""); // Resultado del dígito verificador
   const { theme, setTheme } = useTheme();
   const [isDark, setIsDark] = useState(theme === "dark");
 
@@ -22,33 +23,34 @@ function App() {
   };
 
   const handleValidate = () => {
-    if (ValidateCI(ci).valida === true) {
-      setMensaje(ValidateCI(ci).valida);
+    const result = ValidateCI(ci);
+    if (result.valida === true) {
+      setMensaje("Cédula válida");
       setError("");
     } else {
-      if (ValidateCI(ci).mensaje) {
-        setError(ValidateCI(ci).mensaje);
-        setMensaje("");
-
-      } else {
-        setError(ValidateCI(ci));
-        setMensaje("");
-      }
+      setError(result.mensaje || "Cédula inválida");
+      setMensaje("");
     }
   };
 
   const handleCalculate = () => {
-    if (CalculateCI(ci).digitoVerificador) {
-      setDigitoVerificador(CalculateCI(ci).digitoVerificador);
-      setErrorCalc("");
+    const result = CalculateCI(digitos);
+    if (result.digitoVerificador !== undefined) {
+      // Asegúrate de que el valor 0 sea tratado correctamente
+      setDigitoVerificador(result.digitoVerificador);
+      setErrorCalc(""); // Limpia cualquier mensaje de error previo
     } else {
-      setErrorCalc(CalculateCI(ci));
-      setDigitoVerificador("");
+      setErrorCalc("Error al calcular el dígito verificador");
+      setDigitoVerificador(""); // Limpiar dígito verificador si hay error
     }
   };
 
-  const handlechange = (e) => {
-    setci(e.target.value);
+  const handleCiChange = (e) => {
+    setCi(e.target.value);
+  };
+
+  const handleDigitosChange = (e) => {
+    setDigitos(e.target.value);
   };
 
   return (
@@ -70,6 +72,8 @@ function App() {
           cédula de identidad uruguaya.
         </p>
       </div>
+
+      {/* Sección de validación de cédula */}
       <div className="input-group">
         <Input
           variant="bordered"
@@ -78,18 +82,17 @@ function App() {
           label="Ingresa cédula para validar:"
           placeholder="4.123.456-7"
           type="text"
-          onChange={handlechange}
+          value={ci}
+          onChange={handleCiChange}
         />
-        <Button size="lg" color="default" className="mt-2" onPress={handleValidate}>  
+        <Button size="lg" color="default" className="mt-2" onPress={handleValidate}>
           Validar
         </Button>
-        {mensaje === true && <p className="text-success mt-2">Cédula válida</p>}
-        {mensaje === false && (
-          <p className="text-danger mt-2">Cédula inválida</p>
-        )}
+        {mensaje && <p className="text-success mt-2">{mensaje}</p>}
         {error && <p className="text-danger mt-2">{error}</p>}
       </div>
 
+      {/* Sección de cálculo de dígito verificador */}
       <div className="input-group">
         <Input
           variant="bordered"
@@ -98,18 +101,21 @@ function App() {
           label="Ingresa los 7 dígitos:"
           placeholder="4123456"
           type="text"
-          onChange={handlechange}
+          value={digitos}
+          onChange={handleDigitosChange}
         />
         <Button size="lg" color="default" className="mt-2" onPress={handleCalculate}>
           Calcular
         </Button>
-        {digitoVerificador && (
+        {digitoVerificador !== "" && ( // Asegúrate de mostrar 0 correctamente
           <p className="text-success mt-2">
             Dígito verificador: {digitoVerificador}
           </p>
         )}
         {errorCalc && <p className="text-danger mt-2">{errorCalc}</p>}
       </div>
+
+      {/* Pie de página */}
       <footer className="footer mt-auto py-3 bg-light text-center">
         <p>
           &copy; 2025 CI.UY - by{" "}
