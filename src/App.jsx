@@ -3,16 +3,16 @@ import { useTheme } from "next-themes";
 import ValidateCI from "./script/validate.jsx";
 import CalculateCI from "./script/calculate.jsx";
 import escudo from "../src/assets/uruguay.png";
-import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
+import { MoonIcon, SunIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Button, Card, Link, Input } from "@nextui-org/react";
 
 function App() {
-  const [ci, setCi] = useState(""); // Para almacenar la cédula completa
-  const [digitos, setDigitos] = useState(""); // Para almacenar los 7 dígitos
-  const [mensaje, setMensaje] = useState(""); // Mensaje de validación de cédula
-  const [error, setError] = useState(""); // Error de validación de cédula
-  const [errorCalc, setErrorCalc] = useState(""); // Error de cálculo
-  const [digitoVerificador, setDigitoVerificador] = useState(""); // Resultado del dígito verificador
+  const [ci, setCi] = useState("");
+  const [digitos, setDigitos] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [error, setError] = useState("");
+  const [errorCalc, setErrorCalc] = useState("");
+  const [digitoVerificador, setDigitoVerificador] = useState("");
   const { theme, setTheme } = useTheme();
   const [isDark, setIsDark] = useState(theme === "dark");
 
@@ -36,22 +36,22 @@ function App() {
   const handleCalculate = () => {
     const result = CalculateCI(digitos);
     if (result.digitoVerificador !== undefined) {
-      // Asegúrate de que el valor 0 sea tratado correctamente
       setDigitoVerificador(result.digitoVerificador);
-      setErrorCalc(""); // Limpia cualquier mensaje de error previo
+      setErrorCalc("");
     } else {
       setErrorCalc("Error al calcular el dígito verificador");
-      setDigitoVerificador(""); // Limpiar dígito verificador si hay error
+      setDigitoVerificador("");
     }
   };
 
-  const handleCiChange = (e) => {
-    setCi(e.target.value);
-  };
-
-  const handleDigitosChange = (e) => {
-    setDigitos(e.target.value);
-  };
+  const handleClear = () => {
+    setCi("")
+    setDigitos("")
+    setMensaje("")
+    setError("")
+    setErrorCalc("")
+    setDigitoVerificador("")
+  }
 
   return (
     <Card className="container color-foreground">
@@ -67,13 +67,9 @@ function App() {
       <div className="mb-4 text-center">
         <img className="img-fluid" src={escudo} alt="Escudo de Uruguay" />
         <h1 className="title">CI.UY</h1>
-        <p className="lead">
-          Una aplicación para validar y calcular el dígito verificador de una
-          cédula de identidad uruguaya.
-        </p>
+        <p className="lead my-5">Una aplicación para validar número de cédula de identidad uruguaya o calcular dígito verificador.</p>
       </div>
 
-      {/* Sección de validación de cédula */}
       <div className="input-group">
         <Input
           variant="bordered"
@@ -83,16 +79,27 @@ function App() {
           placeholder="4.123.456-7"
           type="text"
           value={ci}
-          onChange={handleCiChange}
+          onChange={(e) => setCi(e.target.value)}
+          endContent={
+            ci && (
+              <button onClick={() => handleClear()} className="text-gray-500 hover:text-gray-700">
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            )
+          }
         />
-        <Button size="lg" color="default" className="mt-2" onPress={handleValidate}>
-          Validar
+        <Button 
+          isDisabled={ci === ""}
+          size="lg" 
+          className={`mt-2 ${mensaje ? 'bg-green-600 text-white' : error ? 'bg-red-600 text-white' : 'bg-default'}`} 
+          onPress={handleValidate}
+        >
+          {ci === "" ? "Ingresa cédula" : "Validar"}
         </Button>
-        {mensaje && <p className="text-success mt-2">{mensaje}</p>}
-        {error && <p className="text-danger mt-2">{error}</p>}
+        {mensaje && <p className="text-green-600 mt-2">{mensaje}</p>}
+        {error && <p className="text-red-600 mt-2">{error}</p>}
       </div>
 
-      {/* Sección de cálculo de dígito verificador */}
       <div className="input-group">
         <Input
           variant="bordered"
@@ -102,31 +109,31 @@ function App() {
           placeholder="4123456"
           type="text"
           value={digitos}
-          onChange={handleDigitosChange}
+          onChange={(e) => setDigitos(e.target.value)}
+          endContent={
+            digitos && (
+              <button onClick={() => handleClear()} className="text-gray-500 hover:text-gray-700">
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            )
+          }
         />
-        <Button size="lg" color="default" className="mt-2" onPress={handleCalculate}>
-          Calcular
+        <Button 
+          isDisabled={digitos === ""}
+          size="lg" 
+          className={`mt-2 ${digitoVerificador !== "" ? 'bg-green-600 text-white' : errorCalc ? 'bg-red-600 text-white' : 'bg-default'}`} 
+          onPress={handleCalculate}
+        >
+          {digitos === "" ? "Ingresa los digitos" : "Validar"}
         </Button>
-        {digitoVerificador !== "" && ( // Asegúrate de mostrar 0 correctamente
-          <p className="text-success mt-2">
-            Dígito verificador: {digitoVerificador}
-          </p>
-        )}
-        {errorCalc && <p className="text-danger mt-2">{errorCalc}</p>}
+        {digitoVerificador !== "" && (<p className="text-green-600 mt-2">Dígito verificador: {digitoVerificador}</p>)}
+        {errorCalc && <p className="text-red-600 mt-2">{errorCalc}</p>}
       </div>
 
-      {/* Pie de página */}
       <footer className="footer mt-auto py-3 bg-light text-center">
         <p>
-          &copy; 2025 CI.UY - by{" "}
-          <Link
-            isBlock
-            showAnchorIcon
-            color="primary"
-            href="https://github.com/Nestorfron"
-          >
-            Nestor Frones
-          </Link>
+          &copy; 2025 CI.UY - by {" "}
+          <Link isBlock showAnchorIcon color="primary" href="https://github.com/Nestorfron">Nestor Frones</Link>
         </p>
       </footer>
     </Card>
