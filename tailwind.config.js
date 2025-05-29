@@ -13,18 +13,18 @@ export default {
     extend: {
       colors: {
         light: {
-          bg: "#e0f7fa",        // azul cielo muy claro
+          bg: "#fffde7",        // amarillo pastel claro
           card: "#ffffff",      // blanco puro
-          text: "#0d47a1",      // azul profundo
-          accent: "#039be5",    // azul vibrante
-          secondary: "#00796b", // verde azulado fuerte
+          text: "#1e1e1e",      // gris oscuro neutro
+          accent: "#ffca28",    // amarillo dorado vibrante
+          secondary: "#3f51b5", // índigo vibrante
         },
         dark: {
-          bg: "#0d1b2a",        // azul muy oscuro (casi negro)
-          card: "#1b263b",      // azul oscuro
-          text: "#f1f5f9",      // gris casi blanco
-          accent: "#00bcd4",    // celeste vibrante
-          secondary: "#90caf9", // azul claro pastel
+          bg: "#1a1a2e",        // azul muy oscuro
+          card: "#16213e",      // azul oscuro
+          text: "#f3f4f6",      // gris claro
+          accent: "#ffeb3b",    // amarillo brillante
+          secondary: "#82b1ff", // azul celeste pastel
         },
       },
       boxShadow: {

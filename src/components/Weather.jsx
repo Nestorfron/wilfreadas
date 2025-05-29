@@ -13,9 +13,19 @@ import { FiWind, FiDroplet, FiEye, FiMoon, FiSun } from "react-icons/fi";
 
 const API_KEY = "db573f23fe6d4c846e2c8256945123aa";
 
-function formatTime(timestamp, timezoneOffset) {
-  const date = new Date((timestamp + timezoneOffset) * 1000);
-  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+// Función actualizada para mostrar la hora local del lugar usando offset
+function formatTime(timestamp, timezoneOffsetInSeconds) {
+  const date = new Date((timestamp + timezoneOffsetInSeconds) * 1000);
+  const offsetInMinutes = timezoneOffsetInSeconds / 60;
+  const offsetFormatted = `UTC${offsetInMinutes >= 0 ? "+" : ""}${offsetInMinutes / 60}`;
+
+  return new Intl.DateTimeFormat("es-UY", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "UTC",
+    timeZoneName: "shortOffset",
+  }).format(date).replace("UTC", offsetFormatted); // Formato más limpio
 }
 
 const iconMap = {
@@ -48,7 +58,6 @@ export default function Weather() {
     () => localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)
   );
 
-  // Alternar entre dark y light mode
   const toggleTheme = () => {
     const newTheme = isDark ? "light" : "dark";
     setIsDark(!isDark);
@@ -119,7 +128,6 @@ export default function Weather() {
 
   return (
     <div className="relative max-w-md my-6 mx-auto p-6 rounded-3xl shadow-glass bg-light-card text-light-text dark:bg-dark-card dark:text-dark-text transition-colors duration-500">
-      {/* Botón de alternancia de tema */}
       <button
         onClick={toggleTheme}
         className="absolute top-4 right-4 p-2 rounded-full bg-light-bg dark:bg-dark-bg shadow-md hover:scale-105 transition-transform"
