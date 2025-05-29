@@ -65,9 +65,9 @@ function WeatherForecast() {
       (pos) => {
         setCoords({ lat: pos.coords.latitude, lon: pos.coords.longitude });
       },
-      (err) => {
-        setError("Error con la ubicación: " + err.message);
-        setLoading(false);
+      () => {
+        setCoords({ lat: -34.9011, lon: -56.1645 }); // Montevideo
+        setError("No se obtuvo la ubicación, mostrando datos de Montevideo.");
       }
     );
   }, []);

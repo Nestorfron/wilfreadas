@@ -13,19 +13,9 @@ import { FiWind, FiDroplet, FiEye, FiMoon, FiSun } from "react-icons/fi";
 
 const API_KEY = "db573f23fe6d4c846e2c8256945123aa";
 
-// Función actualizada para mostrar la hora local del lugar usando offset
-function formatTime(timestamp, timezoneOffsetInSeconds) {
-  const date = new Date((timestamp + timezoneOffsetInSeconds) * 1000);
-  const offsetInMinutes = timezoneOffsetInSeconds / 60;
-  const offsetFormatted = `UTC${offsetInMinutes >= 0 ? "+" : ""}${offsetInMinutes / 60}`;
-
-  return new Intl.DateTimeFormat("es-UY", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-    timeZone: "UTC",
-    timeZoneName: "shortOffset",
-  }).format(date).replace("UTC", offsetFormatted); // Formato más limpio
+function formatTime(timestamp, timezoneOffset) {
+  const date = new Date((timestamp + timezoneOffset) * 1000);
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 const iconMap = {
@@ -54,6 +44,7 @@ export default function Weather() {
   const [weather, setWeather] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [city, setCity] = useState("");
   const [isDark, setIsDark] = useState(
     () => localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)
   );
@@ -65,45 +56,68 @@ export default function Weather() {
     localStorage.theme = newTheme;
   };
 
-  useEffect(() => {
-    if (!navigator.geolocation) {
-      setError("Geolocalización no soportada por el navegador.");
-      setLoading(false);
-      return;
+  const fetchFallbackLocation = async () => {
+    try {
+      const res = await fetch("https://ipapi.co/json/");
+      const data = await res.json();
+      return { lat: data.latitude, lon: data.longitude };
+    } catch (e) {
+      throw new Error("No se pudo obtener ubicación por IP.");
     }
+  };
 
+  const fetchWeatherByCoords = async (lat, lon) => {
+    setLoading(true);
+    try {
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=es`;
+      const res = await fetch(url);
+      const data = await res.json();
+      setWeather(data);
+    } catch (e) {
+      setError("Error al obtener datos del clima.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchWeatherByCity = async (cityName) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=metric&lang=es`);
+      const data = await res.json();
+      if (data.cod === 200) {
+        setWeather(data);
+      } else {
+        setError("Ciudad no encontrada.");
+      }
+    } catch (e) {
+      setError("No se pudo obtener el clima de esa ciudad.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setCoords({
-          lat: position.coords.latitude,
-          lon: position.coords.longitude,
-        });
+        setCoords({ lat: position.coords.latitude, lon: position.coords.longitude });
       },
-      (err) => {
-        setError("Permiso de ubicación denegado o error: " + err.message);
-        setLoading(false);
+      async () => {
+        try {
+          const fallbackCoords = await fetchFallbackLocation();
+          setCoords(fallbackCoords);
+        } catch {
+          setError("No se pudo obtener tu ubicación. Puedes ingresar tu ciudad.");
+          setLoading(false);
+        }
       }
     );
   }, []);
 
   useEffect(() => {
-    if (!coords) return;
-
-    const fetchWeather = async () => {
-      setLoading(true);
-      try {
-        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${coords.lat}&lon=${coords.lon}&appid=${API_KEY}&units=metric&lang=es`;
-        const res = await fetch(url);
-        const data = await res.json();
-        setWeather(data);
-      } catch (e) {
-        setError("Error al obtener datos del clima.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWeather();
+    if (coords) {
+      fetchWeatherByCoords(coords.lat, coords.lon);
+    }
   }, [coords]);
 
   useEffect(() => {
@@ -112,8 +126,22 @@ export default function Weather() {
 
   if (loading)
     return <p className="text-center text-light-text dark:text-dark-text">Cargando clima...</p>;
-  if (error)
-    return <p className="text-center text-red-500 dark:text-red-400">{error}</p>;
+
+  if (error && !weather)
+    return (
+      <div className="text-center text-light-text dark:text-dark-text p-4">
+        <p className="mb-2">{error}</p>
+        <input
+          type="text"
+          placeholder="Ingresa tu ciudad"
+          className="p-2 rounded border dark:border-gray-600"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && fetchWeatherByCity(city)}
+        />
+      </div>
+    );
+
   if (!weather) return null;
 
   const iconCode = weather.weather[0].icon;
