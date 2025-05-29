@@ -14,6 +14,9 @@ function App() {
       <div className="component-box">
         <WeatherForecast />
       </div>
+      <p className="text-center text-light-secondary dark:text-dark-secondary mt-4">
+        Este proyecto fue desarrollado por <a href="https://github.com/NestorFron" className="text-light-accent dark:text-dark-accent">Nestor Frones</a>
+      </p>
     </div>
   );
 }
