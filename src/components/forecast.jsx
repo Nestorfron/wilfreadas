@@ -14,23 +14,23 @@ import { FiCloud } from "react-icons/fi";
 const API_KEY = "db573f23fe6d4c846e2c8256945123aa";
 
 const weatherIconMap = {
-  "01d": <WiDaySunny size={60} color="#f6d365" />, 
-  "01n": <WiDaySunny size={60} color="#f6d365" />, 
-  "02d": <WiCloudy size={60} color="#90a4ae" />, 
-  "02n": <WiCloudy size={60} color="#90a4ae" />, 
-  "03d": <WiCloudy size={60} color="#90a4ae" />, 
-  "03n": <WiCloudy size={60} color="#90a4ae" />, 
-  "04d": <WiCloudy size={60} color="#78909c" />, 
-  "04n": <WiCloudy size={60} color="#78909c" />, 
-  "09d": <WiRain size={60} color="#4fc3f7" />, 
-  "09n": <WiRain size={60} color="#4fc3f7" />, 
-  "10d": <WiRain size={60} color="#4fc3f7" />, 
-  "10n": <WiRain size={60} color="#4fc3f7" />, 
-  "11d": <WiThunderstorm size={60} color="#f44336" />, 
-  "11n": <WiThunderstorm size={60} color="#f44336" />, 
-  "13d": <WiSnow size={60} color="#81d4fa" />, 
-  "13n": <WiSnow size={60} color="#81d4fa" />, 
-  "50d": <WiFog size={60} color="#b0bec5" />, 
+  "01d": <WiDaySunny size={60} color="#f6d365" />,
+  "01n": <WiDaySunny size={60} color="#f6d365" />,
+  "02d": <WiCloudy size={60} color="#90a4ae" />,
+  "02n": <WiCloudy size={60} color="#90a4ae" />,
+  "03d": <WiCloudy size={60} color="#90a4ae" />,
+  "03n": <WiCloudy size={60} color="#90a4ae" />,
+  "04d": <WiCloudy size={60} color="#78909c" />,
+  "04n": <WiCloudy size={60} color="#78909c" />,
+  "09d": <WiRain size={60} color="#4fc3f7" />,
+  "09n": <WiRain size={60} color="#4fc3f7" />,
+  "10d": <WiRain size={60} color="#4fc3f7" />,
+  "10n": <WiRain size={60} color="#4fc3f7" />,
+  "11d": <WiThunderstorm size={60} color="#f44336" />,
+  "11n": <WiThunderstorm size={60} color="#f44336" />,
+  "13d": <WiSnow size={60} color="#81d4fa" />,
+  "13n": <WiSnow size={60} color="#81d4fa" />,
+  "50d": <WiFog size={60} color="#b0bec5" />,
   "50n": <WiFog size={60} color="#b0bec5" />,
 };
 
@@ -43,11 +43,19 @@ const weatherIconMapSmall = {
   ),
 };
 
-function groupByDay(list) {
+function groupByDay(list, timezoneOffset) {
   const days = {};
   list.forEach((entry) => {
-    const date = new Date(entry.dt * 1000);
-    const dayKey = date.toISOString().split("T")[0];
+    // Ajustar timestamp con timezoneOffset (ms)
+    const localTimestamp = entry.dt * 1000 + timezoneOffset;
+    const date = new Date(localTimestamp);
+
+    // Crear string YYYY-MM-DD con getUTC... porque ya ajustamos timezone
+    const year = date.getUTCFullYear();
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+    const day = date.getUTCDate().toString().padStart(2, "0");
+
+    const dayKey = `${year}-${month}-${day}`;
     if (!days[dayKey]) days[dayKey] = [];
     days[dayKey].push(entry);
   });
@@ -66,7 +74,7 @@ function WeatherForecast() {
         setCoords({ lat: pos.coords.latitude, lon: pos.coords.longitude });
       },
       () => {
-        setCoords({ lat: -34.9011, lon: -56.1645 }); // Montevideo
+        setCoords({ lat: -34.9011, lon: -56.1645 }); // Montevideo fallback
         setError("No se obtuvo la ubicación, mostrando datos de Montevideo.");
       }
     );
@@ -99,8 +107,12 @@ function WeatherForecast() {
   if (error) return <p className="text-center text-red-500">{error}</p>;
   if (!forecastData) return null;
 
-  const groupedDays = groupByDay(forecastData.list);
-  const todayStr = new Date().toISOString().split("T")[0];
+  const timezoneOffset = forecastData.city.timezone * 1000; // offset en ms
+  const groupedDays = groupByDay(forecastData.list, timezoneOffset);
+
+  // Obtener la fecha local "hoy" para filtrar el día actual
+  const nowLocal = new Date(Date.now() + timezoneOffset);
+  const todayStr = nowLocal.toISOString().split("T")[0];
   const nextDays = groupedDays.filter(([date]) => date !== todayStr).slice(0, 10);
 
   return (
@@ -112,12 +124,15 @@ function WeatherForecast() {
       <div className="flex gap-4 overflow-x-auto pb-4">
         {nextDays.map(([date, entries]) => {
           const temps = entries.map((e) => e.main.temp);
-          const avgTemp = (
-            temps.reduce((a, b) => a + b, 0) / temps.length
-          ).toFixed(1);
+          const avgTemp = (temps.reduce((a, b) => a + b, 0) / temps.length).toFixed(1);
+
+          // Buscar la entrada de las 12:00 (hora local)
           const noonEntry =
-            entries.find((e) => new Date(e.dt * 1000).getHours() === 12) ||
-            entries[0];
+            entries.find((e) => {
+              const localTime = new Date(e.dt * 1000 + timezoneOffset);
+              return localTime.getUTCHours() === 12;
+            }) || entries[0];
+
           const { icon, description } = noonEntry.weather[0];
           const windSpeed = noonEntry.wind.speed.toFixed(1);
           const clouds = noonEntry.clouds.all;
@@ -168,7 +183,9 @@ function WeatherForecast() {
 
               <div className="flex gap-2 overflow-x-auto mt-4 w-full">
                 {entries.map((hourData) => {
-                  const hour = new Date(hourData.dt * 1000).getHours();
+                  const localDate = new Date(hourData.dt * 1000 + timezoneOffset);
+                  const hour = localDate.toISOString().substring(11, 16); // HH:mm
+
                   const tempHour = hourData.main.temp.toFixed(1);
                   const iconSmall = hourData.weather[0].icon;
                   const descHour = hourData.weather[0].description;
@@ -177,7 +194,7 @@ function WeatherForecast() {
                     <div
                       key={hourData.dt}
                       className="flex flex-col items-center text-xs min-w-[60px]"
-                      title={`${descHour}, ${tempHour}°C a las ${hour}:00`}
+                      title={`${descHour}, ${tempHour}°C a las ${hour}`}
                     >
                       <div className="mb-1">
                         {weatherIconMapSmall[iconSmall] || (
@@ -189,7 +206,7 @@ function WeatherForecast() {
                         )}
                       </div>
                       <div>{tempHour}°C</div>
-                      <div>{hour}:00</div>
+                      <div>{hour}</div>
                     </div>
                   );
                 })}
