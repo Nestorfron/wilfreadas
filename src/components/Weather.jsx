@@ -4,7 +4,7 @@ import CurrentWeather from "./CurrentWeather";
 import WeatherForecast from "./WeatherForecast";
 import WeatherAlerts from "./WeatherAlerts";
 
-const API_KEY = "db573f23fe6d4c846e2c8256945123aa";
+const API_KEY = "004c423635ca60e7c9369ffa5f03ee8d";
 
 const departments = {
   Artigas: { lat: -30.4, lon: -56.5 },
