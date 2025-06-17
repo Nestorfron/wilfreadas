@@ -19,6 +19,7 @@ export default function WeatherAlerts({ alerts = [] }) {
   const inumetAlerts = alerts.filter((alert) =>
     alert.sender_name.toLowerCase().includes("instituto uruguayo de meteorología")
   );
+  console.log(inumetAlerts);
 
   if (inumetAlerts.length === 0) {
     return (

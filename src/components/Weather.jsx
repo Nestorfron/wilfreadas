@@ -111,22 +111,26 @@ export default function Weather() {
           </button>
 
           {showAlertsModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-              <div className="bg-white dark:bg-gray-800 text-black dark:text-white p-6 rounded-lg max-w-xl w-full shadow-lg relative">
-                <button
-                  onClick={() => setShowAlertsModal(false)}
-                  className="absolute top-2 right-3 text-xl font-bold text-gray-600 hover:text-red-500"
-                  aria-label="Cerrar"
-                >
-                  ×
-                </button>
-                <WeatherAlerts
-                  alerts={weather.alerts}
-                  timezoneOffset={timezoneOffset}
-                />
-              </div>
-            </div>
-          )}
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
+    onClick={() => setShowAlertsModal(false)} // cerrar al clickear fuera del modal
+  >
+    <div
+      className="bg-white dark:bg-gray-900 text-black dark:text-white p-6 rounded-xl max-w-lg w-full max-h-[80vh] overflow-y-auto shadow-lg relative"
+      onClick={(e) => e.stopPropagation()} // evitar cerrar modal al clickear dentro
+    >
+      <button
+        onClick={() => setShowAlertsModal(false)}
+        className="absolute top-3 right-3 text-2xl font-bold text-gray-700 dark:text-gray-300 hover:text-red-500 transition-colors"
+        aria-label="Cerrar"
+      >
+        &times;
+      </button>
+      <WeatherAlerts alerts={weather.alerts} timezoneOffset={timezoneOffset} />
+    </div>
+  </div>
+)}
+
         </>
       )}
 
