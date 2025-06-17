@@ -9,7 +9,7 @@ import {
   WiSunrise,
   WiSunset,
 } from "react-icons/wi";
-import { FiWind, FiDroplet, FiEye } from "react-icons/fi";
+import { FiWind, FiDroplet, FiEye, FiMapPin } from "react-icons/fi";
 
 const iconMap = {
   "01d": <WiDaySunny size={100} className="text-yellow-400" />,
@@ -33,15 +33,14 @@ const iconMap = {
 };
 
 function formatTime(timestamp, timezoneOffset) {
-    const date = new Date(timestamp * 1000);
-    const offsetMinutes = timezoneOffset / 60;
-    const localDate = new Date(date.getTime() + offsetMinutes * 60 * 1000);
-  
-    const hours = localDate.getUTCHours().toString().padStart(2, "0");
-    const minutes = localDate.getUTCMinutes().toString().padStart(2, "0");
-    return `${hours}:${minutes}`;
-  }
-  
+  const date = new Date(timestamp * 1000);
+  const offsetMinutes = timezoneOffset / 60;
+  const localDate = new Date(date.getTime() + offsetMinutes * 60 * 1000);
+
+  const hours = localDate.getUTCHours().toString().padStart(2, "0");
+  const minutes = localDate.getUTCMinutes().toString().padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
 
 function formatHour(timestamp, timezoneOffset) {
   const date = new Date((timestamp + timezoneOffset) * 1000);
@@ -49,7 +48,12 @@ function formatHour(timestamp, timezoneOffset) {
   return `${hours}:00`;
 }
 
-export default function CurrentWeather({ weather, city }) {
+export default function CurrentWeather({
+  weather,
+  departments,
+  selectedDept,
+  onChangeDept,
+}) {
   const current = weather.current;
   const hourly = weather.hourly.slice(0, 24);
   const timezoneOffset = weather.timezone_offset;
@@ -65,7 +69,23 @@ export default function CurrentWeather({ weather, city }) {
 
   return (
     <div className="p-8 rounded-2xl shadow-lg bg-gradient-to-r from-blue-400 to-cyan-500 dark:from-gray-800 dark:to-gray-900 text-white max-w-xl mx-auto">
-      <h2 className="text-3xl font-extrabold drop-shadow-lg mb-6">{city}</h2>
+      {/* Selector de departamento */}
+      {departments && (
+        <div className="mb-4 flex items-center gap-2">
+           <FiMapPin className="text-xl" />
+          <select
+            value={selectedDept}
+            onChange={(e) => onChangeDept(e.target.value)}
+            className="text-black rounded px-3 py-2 bg-white shadow-md dark:bg-white"
+          >
+            {Object.keys(departments).map((dept) => (
+              <option key={dept} value={dept}>
+                {dept.replace(/([a-z])([A-Z])/g, "$1 $2")}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="flex items-center gap-8 mb-6">
         <div className="flex-shrink-0">{currentIcon}</div>
@@ -102,7 +122,9 @@ export default function CurrentWeather({ weather, city }) {
         </div>
         <div title="Punto de rocío" className="flex flex-col items-center">
           <FiDroplet className="text-blue-200 drop-shadow-md" />
-          <span className="mt-1 text-sm sm:text-base">{current.dew_point.toFixed(1)}°C</span>
+          <span className="mt-1 text-sm sm:text-base">
+            {current.dew_point.toFixed(1)}°C
+          </span>
         </div>
         <div title="Presión" className="flex flex-col items-center">
           <FiWind className="text-green-200 drop-shadow-md" />
@@ -114,7 +136,6 @@ export default function CurrentWeather({ weather, city }) {
         </div>
       </div>
 
-      {/* Carrusel horario corregido */}
       <div className="overflow-x-auto mt-4 pb-2">
         <div className="flex gap-4 min-w-max">
           {hourly.map((hour, i) => {
