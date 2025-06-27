@@ -33,6 +33,48 @@ function App() {
               className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
             />
           </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src="../src/assets/3.jpg"
+              alt="Ciudad"
+              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src="../src/assets/4.jpg"
+              alt="Montañas"
+              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src="../src/assets/5.jpg"
+              alt="Ciudad"
+              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src="../src/assets/6.jpg"
+              alt="Ciudad"
+              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src="../src/assets/7.jpg"
+              alt="Montañas"
+              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src="../src/assets/8.jpg"
+              alt="Ciudad"
+              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
+            />
+          </SwiperSlide>
         </Swiper>
       </div>
 
