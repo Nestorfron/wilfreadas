@@ -18,7 +18,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-purple-600 via-pink-500 to-yellow-400 px-4 sm:px-6 lg:px-8 py-10">
       <h1 className="text-4xl sm:text-5xl font-extrabold mb-8 text-white drop-shadow-lg text-center">
-        Wilfradas
+        Wilfradas 2025
       </h1>
 
       <div className="w-full max-w-2xl mb-8">
