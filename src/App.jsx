@@ -5,6 +5,15 @@ import "swiper/css/pagination";
 import "./styles/App.css";
 import { Pagination } from "swiper/modules";
 
+import img1 from "./assets/1.jpg";
+import img2 from "./assets/2.jpg";
+import img3 from "./assets/3.jpg";
+import img4 from "./assets/4.jpg";
+import img5 from "./assets/5.jpg";
+import img6 from "./assets/6.jpg";
+import img7 from "./assets/7.jpg";
+import img8 from "./assets/8.jpg";
+
 function App() {
   return (
     <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-purple-600 via-pink-500 to-yellow-400 px-4 sm:px-6 lg:px-8 py-10">
@@ -21,57 +30,57 @@ function App() {
         >
           <SwiperSlide>
             <img
-              src="../src/assets/1.jpg"
+              src={img1}
               alt="Montañas"
               className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
             />
           </SwiperSlide>
           <SwiperSlide>
             <img
-              src="../src/assets/2.jpg"
-              alt="Ciudad"
-              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
-            />
-          </SwiperSlide>
-          <SwiperSlide>
-            <img
-              src="../src/assets/3.jpg"
-              alt="Ciudad"
-              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
-            />
-          </SwiperSlide>
-          <SwiperSlide>
-            <img
-              src="../src/assets/4.jpg"
+              src={img2}
               alt="Montañas"
               className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
             />
           </SwiperSlide>
           <SwiperSlide>
             <img
-              src="../src/assets/5.jpg"
-              alt="Ciudad"
-              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
-            />
-          </SwiperSlide>
-          <SwiperSlide>
-            <img
-              src="../src/assets/6.jpg"
-              alt="Ciudad"
-              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
-            />
-          </SwiperSlide>
-          <SwiperSlide>
-            <img
-              src="../src/assets/7.jpg"
+              src={img3}
               alt="Montañas"
               className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
             />
           </SwiperSlide>
           <SwiperSlide>
             <img
-              src="../src/assets/8.jpg"
-              alt="Ciudad"
+              src={img4}
+              alt="Montañas"
+              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src={img5}
+              alt="Montañas"
+              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src={img6}
+              alt="Montañas"
+              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src={img7}
+              alt="Montañas"
+              className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <img
+              src={img8}
+              alt="Montañas"
               className="rounded-xl shadow-2xl w-full max-h-[400px] object-cover"
             />
           </SwiperSlide>
